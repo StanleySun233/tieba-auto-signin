@@ -1,5 +1,10 @@
 # tieba-auto-signin
 # 贴吧自动签到
+## 运行
+```shell
+pip install --no-cache-dir -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+python app.py
+```
 ## 功能
 1. Docker一键部署
 
