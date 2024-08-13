@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In Log</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <h1>Sign In Log</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Date</th>
+                <th>User Name</th>
+                <th>Message</th>
+                <th>Operations</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+                <tr>
+                    <td>{{ log.uid }}</td>
+                    <td>{{ log.date }}</td>
+                    <td>{{ log.user_name }}</td>
+                    <td>{{ log.message }}</td>
+                    <td>
+                        <a href="{{ url_for('delete_log', uid=log.uid) }}" >Delete</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/">Back to Home</a>
+</body>
+</html>

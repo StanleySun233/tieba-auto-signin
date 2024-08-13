@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Account</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <h1>Edit Account</h1>
+    <form action="{{ url_for('edit_account', uid=account.uid) }}" method="post">
+        <label for="user_name" title="仅做记录，不实际使用">百度账号</label>
+        <input type="text" name="user_name" value="{{ account.user_name }}" required>
+        <a target="_blank" href="https://jingyan.baidu.com/article/db55b609ccb6bc4ba20a2f78.html" title="如何获取bduss">BDUSS</a>
+        <input type="text" name="cookies" value="{{ account.cookies }}" required>
+        <a target="_blank" href="https://sct.ftqq.com/login" title="接入微信推送" for="server_token">Server酱 Token(选填)</a>
+        <input type="text" name="server_token" value="{{ account.server_token }}" required>
+        <button type="submit">Save Changes</button>
+    </form>
+    <a href="{{ url_for('manage_accounts') }}">Cancel</a>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Accounts</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <h1>Manage Accounts</h1>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>账号</th>
+                <th>状态</th>
+                <th>签到</th>
+                <th>编辑</th>
+                <th>删除</th>
+                <th>创建</th>
+                <th>修改</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for account in accounts %}
+                <tr>
+                    <td>
+                        <a href="{{ url_for('sign_in_history', user_name=account.user_name) }}">{{ account.user_name }}</a>
+                    </td>
+                    <td>
+                        {{ account.status }}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('execute_sign_in', uid=account.uid) }}">签到</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('edit_account', uid=account.uid) }}">编辑</a>
+                    </td>
+                    <td>
+                        <a href="{{ url_for('delete_account', uid=account.uid) }}">删除</a>
+                    </td>
+                    <td>{{ account.create_date }}</td>
+                    <td>{{ account.update_date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In History</title>
+    <link rel="stylesheet" href="../static/styles.css">
+</head>
+<body>
+    <h1>Sign In History</h1>
+
+    {% if sign_in_history %}
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>User Name</th>
+                    <th>Date</th>
+                    <th>Message</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in sign_in_history %}
+                    <tr>
+                        <td>{{ log.user_name }}</td>
+                        <td>{{ log.date }}</td>
+                        <td>{{ log.message }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No sign-in history found for the specified account.</p>
+    {% endif %}
+
+    <a href="{{ url_for('manage_accounts') }}">Back to Manage Accounts</a>
+</body>
+</html>
