@@ -12,7 +12,7 @@ python app.py
 
 进入仓库文件夹后，直接输入`sh build.sh` 或者
 ```shell
-git clone git@github.com:StanleySun233/tieba-auto-signin.git
+git clone https://github.com/StanleySun233/tieba-auto-signin.git
 cd tieba-auto-signin
 docker build -t tieba-auto-signin .
 docker run -d -p 5432:5000 --restart=always tieba-auto-signin
