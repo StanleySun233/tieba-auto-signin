@@ -4,7 +4,7 @@
 ## docker镜像
 喜报 目前支持docker一键部署。
 ```shell
-sudo docker run -d -p 5432:5000 --name tbsign --restart=always stanleysun233/tbsign:v1.0.0
+sudo docker run -d -p 5432:5000 --name tbsign --restart=always stanleysun233/tbsign
 ```
 
 ## 运行
