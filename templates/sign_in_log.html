@@ -3,35 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In Log</title>
-    <link rel="stylesheet" href="../static/styles.css">
+    <title>签到日志</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Sign In Log</h1>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>User ID</th>
-                <th>Date</th>
-                <th>User Name</th>
-                <th>Message</th>
-                <th>Operations</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for log in logs %}
+
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">自动签到系统</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">首页</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_account_form') }}">添加新账号</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('manage_accounts') }}">管理账号</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">签到日志</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">用户ID</th>
+                    <th scope="col">用户名</th>
+                    <th scope="col">签到时间</th>
+                    <th scope="col">消息</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in logs %}
                 <tr>
                     <td>{{ log.uid }}</td>
-                    <td>{{ log.date }}</td>
                     <td>{{ log.user_name }}</td>
-                    <td>{{ log.message }}</td>
+                    <td>{{ log.date }}</td>
                     <td>
-                        <a href="{{ url_for('delete_log', uid=log.uid) }}" >Delete</a>
+                        {% if log.message == "签到成功" %}
+                        <span class="badge badge-success">{{ log.message }}</span>
+                        {% else %}
+                        <span class="badge badge-danger">{{ log.message }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('delete_log', uid=log.uid) }}" class="btn btn-danger btn-sm">删除</a>
                     </td>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    <a href="/">Back to Home</a>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-secondary">返回首页</a>
+    </div>
+</div>
+
+<!-- 引入 Bootstrap JS 和依赖 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

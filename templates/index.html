@@ -3,14 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>贴吧自动签到管理系统</title>
+    <title>自动签到系统</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>贴吧自动签到首页</h1>
 
-    <ul><a href="/sign_in_log">签到记录</a></ul>
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">自动签到系统</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">首页</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_account_form') }}">添加新账号</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('sign_in_log') }}">签到日志</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('manage_accounts') }}">管理账号</a>
+            </li>
+        </ul>
+    </div>
+</nav>
 
-    <ul><a href="/manage_accounts">管理账号</a></ul>
-    <ul><a href="/add_account_form">添加账号</a></ul>
+<div class="container mt-5">
+    <h1 class="text-center mb-4">账号列表</h1>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">用户ID</th>
+                    <th scope="col">用户名</th>
+                    <th scope="col">操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for account in accounts %}
+                <tr>
+                    <td>{{ account.uid }}</td>
+                    <td>{{ account.user_name }}</td>
+                    <td>
+                        <a href="javascript:void(0);" onclick="openSignInProgress({{ account.uid }})" class="btn btn-primary btn-sm">手动签到</a>
+                        <a href="{{ url_for('edit_account', uid=account.uid) }}" class="btn btn-warning btn-sm">编辑</a>
+                        <a href="{{ url_for('delete_account', uid=account.uid) }}" class="btn btn-danger btn-sm">删除</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('add_account_form') }}" class="btn btn-success">添加新账号</a>
+        <a href="{{ url_for('sign_in_log') }}" class="btn btn-info">查看签到日志</a>
+        <a href="{{ url_for('manage_accounts') }}" class="btn btn-secondary">管理账号</a>
+    </div>
+</div>
+
+<!-- 弹出窗口显示签到进度 -->
+<div id="progressModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">签到进度</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="progressLog" style="max-height: 300px; overflow-y: auto;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript 和 Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function openSignInProgress(uid) {
+        const progressLog = document.getElementById("progressLog");
+        progressLog.innerHTML = '';  // 清空之前的日志
+        $('#progressModal').modal('show');
+
+        const eventSource = new EventSource(`/sign_in_progress/${uid}`);
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            progressLog.innerHTML += `<p>${data.message}</p>`;
+            progressLog.scrollTop = progressLog.scrollHeight;  // 自动滚动到底部
+        };
+        eventSource.onerror = function() {
+            eventSource.close();
+        };
+    }
+</script>
+
 </body>
 </html>

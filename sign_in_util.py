@@ -51,6 +51,9 @@ class TiebaSignin():
     def get_unsuccessful_list(self):
         return [i["name"] for i in self.follow if i["is_sign"] == 0]
 
+    def get_successful_list(self):
+        return [i["name"] for i in self.follow if i["is_sign"] == 1]
+
     def sign(self, name, sleep=0.2):
         data = {"kw": name,
                 "tbs": self.tbs,
@@ -62,9 +65,12 @@ class TiebaSignin():
                 self.logger.info("签到成功: {}".format(name))
             else:
                 self.logger.error("签到失败: {}".format(name))
+                return False
         except Exception as e:
             self.logger.error("{}: 签到失败 -- {}".format(name, e))
+            return False
         time.sleep(sleep)
+        return True
 
     def server_push(self):
         self.get_follow()
@@ -98,26 +104,35 @@ class TiebaSignin():
         self.get_user_tbs()
         flag = retry_time
         while flag:
-            self.logger.info("当前次数: {}, 所有次数: {}".format(retry_time - flag + 1, retry_time))
-            self.get_follow()
-            unsuccessful_list = self.get_unsuccessful_list()
-            self.logger.info("所有关注: {}".format(len(self.follow)))
-            self.logger.info("等待签到: {}".format(len(unsuccessful_list)))
-            for i in unsuccessful_list:
-                self.sign(i)
+            self.logger.info(f"当前次数: {retry_time - flag + 1}, 所有次数: {retry_time}")
+            yield {"message": f"开始签到 - 当前次数: {retry_time - flag + 1} / {retry_time}"}
 
             self.get_follow()
             unsuccessful_list = self.get_unsuccessful_list()
-            self.logger.info("签到成功: {}".format(len(self.follow) - len(unsuccessful_list)))
-            self.logger.info("签到失败: {}".format(len(unsuccessful_list)))
+            yield {"message": f"等待签到的贴吧数量: {len(unsuccessful_list)}"}
+
+            for forum_name in unsuccessful_list:
+                sign_result = self.sign(forum_name)
+                if sign_result:
+                    yield {"message": f"{forum_name} 签到成功"}
+                else:
+                    yield {"message": f"{forum_name} 签到失败"}
+
+            # 再次检查签到状态
+            self.get_follow()
+            unsuccessful_list = self.get_unsuccessful_list()
             if len(unsuccessful_list) == 0:
-                self.logger.info("所有贴吧签到成功，提前退出")
+                yield {"message": "所有贴吧签到成功"}
                 break
-            self.logger.info("等待: {}".format(delay_round))
+            else:
+                yield {"message": f"签到失败的贴吧数量: {len(unsuccessful_list)}，稍后重试"}
+
             time.sleep(delay_round)
             flag -= 1
+
         if server != '':
             self.server_push()
-        return {"user_name": name,
-                "fail_num": len(self.get_unsuccessful_list()),
-                "fail_list": self.get_unsuccessful_list()}
+            yield {"message": "已向Server酱发布推送"}
+
+        yield {"message": "签到任务完成"}
+

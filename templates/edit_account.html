@@ -3,20 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Account</title>
-    <link rel="stylesheet" href="../static/styles.css">
+    <title>编辑账号</title>
+    <!-- 引入 Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Edit Account</h1>
+
+<!-- 导航栏 -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="#">自动签到系统</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">首页</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('sign_in_log') }}">签到日志</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('manage_accounts') }}">管理账号</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">编辑账号</h1>
+
     <form action="{{ url_for('edit_account', uid=account.uid) }}" method="post">
-        <label for="user_name" title="仅做记录，不实际使用">百度账号</label>
-        <input type="text" name="user_name" value="{{ account.user_name }}" required>
-        <a target="_blank" href="https://jingyan.baidu.com/article/db55b609ccb6bc4ba20a2f78.html" title="如何获取bduss">BDUSS</a>
-        <input type="text" name="cookies" value="{{ account.cookies }}" required>
-        <a target="_blank" href="https://sct.ftqq.com/login" title="接入微信推送" for="server_token">Server酱 Token(选填)</a>
-        <input type="text" name="server_token" value="{{ account.server_token }}" required>
-        <button type="submit">Save Changes</button>
+        <div class="form-group">
+            <label for="user_name">用户名</label>
+            <input type="text" class="form-control" id="user_name" name="user_name" value="{{ account.user_name }}" required>
+        </div>
+        <div class="form-group">
+            <label for="cookies">Cookies</label>
+            <input type="text" class="form-control" id="cookies" name="cookies" value="{{ account.cookies }}" required>
+        </div>
+        <div class="form-group">
+            <label for="server_token">服务器令牌</label>
+            <input type="text" class="form-control" id="server_token" name="server_token" value="{{ account.server_token }}" placeholder="可选">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">更新</button>
     </form>
-    <a href="{{ url_for('manage_accounts') }}">Cancel</a>
+
+    <div class="text-center mt-4">
+        <a href="{{ url_for('manage_accounts') }}" class="btn btn-secondary">返回管理页面</a>
+    </div>
+</div>
+
+<!-- 引入 Bootstrap JS 和依赖 -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

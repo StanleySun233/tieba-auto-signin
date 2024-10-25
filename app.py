@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from datetime import datetime, timedelta
@@ -7,6 +8,10 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 import sign_in_util
 from threading import Thread
+from flask_sse import sse
+from flask import Flask, jsonify, request, Response
+from flask_sse import sse
+import time
 
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -42,10 +47,10 @@ class SignInLog(db.Model):
     message = db.Column(db.Text, nullable=False)
 
     def __repr__(self):
-        return f"SignInLog('{self.uid}', '{self.date}', '{self.message}', '{self.user_name}')"
+        return f"SignInLog('{self.uid}', '{self.date}', '{self.message}', '{self.user_name}', '{self.data}')"
 
     def to_dict(self):
-        return {"uid": self.uid, "date": self.date, "message": self.message, "user_name": self.user_name}
+        return {"uid": self.uid, "date": self.date, "message": self.message, "user_name": self.user_name,"data": self.data}
 
 
 class AutoSign(db.Model):
@@ -55,7 +60,6 @@ class AutoSign(db.Model):
 
 
 def sign(user_name, cookies, server_token=""):
-    # 实际的签到逻辑在这里，你需要根据你的需求修改这个函数
     feedback = sign_util.run(cookies, user_name, server_token)
     date = getNowTime()
     new_log = SignInLog(user_name=user_name,
@@ -218,6 +222,25 @@ def restart(date):
     db.session.delete(auto_sign)
     db.session.commit()
     return redirect(url_for('index'))
+
+
+# 添加签到进度的 SSE 路由
+@app.route('/sign_in_progress/<int:uid>', methods=['GET'])
+def sign_in_progress(uid):
+    account = Account.query.get(uid)
+    signin = sign_util
+    signin.set_bduss(account.cookies)  # 假设 cookies 字段存储了 BDUSS
+    signin.name = account.user_name
+    signin.server = account.server_token
+
+    def generate_signin_progress():
+        for message in signin.run(account.cookies, account.user_name, account.server_token):
+            yield f"data: {json.dumps(message)}\n\n"
+            time.sleep(1)
+
+
+
+    return Response(generate_signin_progress(), mimetype='text/event-stream')
 
 
 if __name__ == '__main__':
